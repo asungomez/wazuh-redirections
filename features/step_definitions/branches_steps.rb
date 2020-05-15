@@ -4,7 +4,10 @@ Given("I have some branches") do
 end
 
 When("I create a new branch") do
-  pending # Write code here that turns the phrase above into concrete actions
+  @branch = FactoryBot.build(:branch)
+  visit new_branch_path
+  fill_in 'branch_version', with: @branch.version
+  click_on 'Save'
 end
 
 When("I delete a branch") do
@@ -42,7 +45,8 @@ Then("I should see a list of its pages") do
 end
 
 Then("I should see the new branch in the branches list") do
-  pending # Write code here that turns the phrase above into concrete actions
+  visit branches_path 
+  expect(page).to have_content @branch.version
 end
 
 Then("I should see the new branch name in the branches list") do

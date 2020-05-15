@@ -1,0 +1,6 @@
+- if resource.errors.any?
+  .alert.alert-danger
+    %strong= "#{pluralize(resource.errors.count, "error")} prohibited this #{resource.class.name} from being saved:"
+    %ul
+      - resource.errors.full_messages.each do |message|
+        %li= message

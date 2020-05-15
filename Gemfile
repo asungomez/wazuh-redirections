@@ -42,6 +42,8 @@ group :development, :test do
   gem 'factory_bot_rails'
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3', '~> 1.3', '>= 1.3.11'
+  # Use faker for generating seed data
+  gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'master'
 end
 
 group :development do

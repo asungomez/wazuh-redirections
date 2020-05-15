@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :branch do
-    version { "MyString" }
+    version { Faker::App.semantic_version(major: 2..3) }
   end
 end

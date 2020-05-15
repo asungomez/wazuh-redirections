@@ -1,5 +1,6 @@
 Given("I have some branches") do
-  pending # Write code here that turns the phrase above into concrete actions
+  FactoryBot.create_list(:branch, 5)
+  @branch = Branch.first
 end
 
 When("I create a new branch") do
@@ -19,11 +20,13 @@ When("I visit a branch details page") do
 end
 
 When("I visit the branches index page") do
-  pending # Write code here that turns the phrase above into concrete actions
+  visit branches_path
 end
 
 Then("I should see all branches listed") do
-  pending # Write code here that turns the phrase above into concrete actions
+  Branch.all.each do |branch|
+    expect(page).to have_content branch.version
+  end
 end
 
 Then("I should not see the deleted branch in the branches list") do

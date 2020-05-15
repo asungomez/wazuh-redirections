@@ -65,6 +65,8 @@ class BranchesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_branch
       @branch = Branch.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to branches_path, notice: 'This branch does not exist'
     end
 
     # Only allow a list of trusted parameters through.

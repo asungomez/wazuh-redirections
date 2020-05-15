@@ -11,7 +11,8 @@ When("I create a new branch") do
 end
 
 When("I delete a branch") do
-  pending # Write code here that turns the phrase above into concrete actions
+  visit branches_path
+  page.find('.list-group-item', text: @branch.version).click_on('Delete')
 end
 
 When("I rename a branch") do
@@ -33,7 +34,8 @@ Then("I should see all branches listed") do
 end
 
 Then("I should not see the deleted branch in the branches list") do
-  pending # Write code here that turns the phrase above into concrete actions
+  visit branches_path 
+  expect(page).not_to have_content @branch.version
 end
 
 Then("I should not see the old branch name in the branches list") do

@@ -29,6 +29,9 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Template pages in haml
 gem "haml-rails", "~> 2.0"
 
+# Use down for downloading files
+gem 'down', '~> 1.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

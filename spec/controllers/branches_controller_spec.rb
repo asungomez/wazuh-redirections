@@ -6,6 +6,13 @@ RSpec.describe BranchesController, type: :controller do
     Branch.count + 1
   end
 
+  # This is the number of pages the 3.12 branch currently has. This test will break if this page number changes, 
+  # so when it fails, it needs to be revisited to assert if the failure is caused by the code or by a structure 
+  # change in the remote documentation
+  let(:pages_in_branch_3_12) do
+    513
+  end
+
   describe 'GET #index' do
     it 'returns a success response' do
       get :index
@@ -154,6 +161,50 @@ RSpec.describe BranchesController, type: :controller do
         expect {
           delete :destroy, params: { id: invalid_id }
         }.not_to change{Branch.count}
+      end
+    end
+  end
+
+  describe 'PUT #refresh' do
+    context 'when the branch exists in the app' do
+      
+      context 'and it exists remotely' do
+        before(:each) do
+          @branch = FactoryBot.create(:branch, version: '3.12')
+        end
+
+        it 'redirects to the branch page' do
+          put :refresh, params: { id: @branch.id }
+          expect(response).to redirect_to branch_path(@branch)
+        end
+
+        it 'updates the pages list' do
+          put :refresh, params: { id: @branch.id }
+          expect(@branch.pages.count).to eq(pages_in_branch_3_12)
+        end
+      end
+
+      context 'and it does not exist remotely' do
+        before(:each) do
+          @branch = FactoryBot.create(:branch, version: '1.1')
+        end
+
+        it 'redirects to the branch page' do
+          put :refresh, params: { id: @branch.id }
+          expect(response).to redirect_to branch_path(@branch)
+        end
+
+        it 'empties the pages list' do
+          put :refresh, params: { id: @branch.id }
+          expect(@branch.pages.count).to eq(0)
+        end
+      end
+    end
+
+    context 'when the branch does not exist in the app' do
+      it 'redirects to the branches page' do
+        put :refresh, params: { id: invalid_id }
+        expect(response).to redirect_to branches_path
       end
     end
   end

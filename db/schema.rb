@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_15_124318) do
+ActiveRecord::Schema.define(version: 2020_05_18_085612) do
 
   create_table "branches", force: :cascade do |t|
     t.string "version"
@@ -18,4 +18,13 @@ ActiveRecord::Schema.define(version: 2020_05_15_124318) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "pages", force: :cascade do |t|
+    t.string "path"
+    t.integer "branch_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["branch_id"], name: "index_pages_on_branch_id"
+  end
+
+  add_foreign_key "pages", "branches"
 end

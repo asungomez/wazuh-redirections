@@ -1,5 +1,8 @@
 Given("I have some branches") do
-  FactoryBot.create_list(:branch, 5)
+  @versions = ['3.11', '3.12']
+  @versions.each do |version|
+    FactoryBot.create(:branch, version: version)
+  end
   @branch = Branch.first
 end
 

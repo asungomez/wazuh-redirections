@@ -1,10 +1,10 @@
 class BranchesController < ApplicationController
-  before_action :set_branch, only: [:show, :edit, :update, :destroy]
+  before_action :set_branch, only: [:show, :edit, :update, :destroy, :refresh]
 
   # GET /branches
   # GET /branches.json
   def index
-    @branches = Branch.order(:version)
+    @branches = Branch.ordered
   end
 
   # GET /branches/1
@@ -59,6 +59,12 @@ class BranchesController < ApplicationController
       format.html { redirect_to branches_url, notice: 'Branch was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  # PUT /branches/1/refresh
+  def refresh
+    @branch.refresh 
+    redirect_to branch_path(@branch), notice: 'Branch pages succesfully reloaded'
   end
 
   private

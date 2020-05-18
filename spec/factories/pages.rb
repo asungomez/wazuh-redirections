@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :page do
-    path { "/some/path" }
+    path { Faker::File.dir }
     branch
   end
 end

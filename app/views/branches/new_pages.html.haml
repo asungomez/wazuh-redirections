@@ -1,0 +1,7 @@
+= render 'branch_header'
+
+- if @pages.count > 0
+  .list-group.mt-4.mb-4
+    = render partial: 'pages/new_page', collection: @pages, as: :page
+- else 
+  .alert.alert-primary This branch does not have any new pages

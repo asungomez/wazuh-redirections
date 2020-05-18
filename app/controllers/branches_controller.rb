@@ -1,5 +1,5 @@
 class BranchesController < ApplicationController
-  before_action :set_branch, only: [:show, :edit, :update, :destroy, :refresh]
+  before_action :set_branch, except: [:index, :new, :create]
 
   # GET /branches
   # GET /branches.json
@@ -10,6 +10,7 @@ class BranchesController < ApplicationController
   # GET /branches/1
   # GET /branches/1.json
   def show
+    redirect_to new_pages_branch_path(@branch)
   end
 
   # GET /branches/new
@@ -65,6 +66,10 @@ class BranchesController < ApplicationController
   def refresh
     @branch.refresh 
     redirect_to branch_path(@branch), notice: @branch.pages.count > 0 ? 'Branch pages succesfully reloaded' : 'This branch does not have any documentation pages'
+  end
+
+  def new_pages 
+    @pages = @branch.new_pages
   end
 
   private

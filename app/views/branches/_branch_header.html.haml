@@ -1,0 +1,21 @@
+%h1.text-center.mt-4.mb-4 Brach #{@branch.version}
+.text-center.mb-3 
+  = link_to 'Back to branches list', branches_path
+.text-center.mb-4 
+  = link_to 'Rename', edit_branch_path(@branch), class: 'btn btn-warning'
+  = link_to 'Delete', @branch, method: :delete, class: 'btn btn-danger ml-2'
+  = link_to 'Refresh', refresh_branch_path(@branch), method: :put, class: 'btn btn-primary ml-2'
+
+%hr
+
+%ul.nav.nav-pills.nav-fill.mt-5
+  %li.nav-item 
+    = link_to 'New pages', new_pages_branch_path(@branch), class: "nav-link #{active_class(new_pages_branch_path(@branch))}"
+  %li.nav-item
+    = link_to 'Deleted pages', '#', class: "nav-link #{active_class(root_path)}"
+  %li.nav-item
+    = link_to 'Renamed pages', '#', class: "nav-link #{active_class(root_path)}"
+  %li.nav-item
+    = link_to 'Merged pages', '#', class: "nav-link #{active_class(root_path)}"
+  %li.nav-item
+    = link_to 'Split pages', '#', class: "nav-link #{active_class(root_path)}"

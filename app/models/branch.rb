@@ -19,13 +19,37 @@ class Branch < ApplicationRecord
     parts = version.split('.')
     major = parts[0].to_i
     minor = parts[1].to_i
-    return major * 10 + minor
+    return major * 100 + minor
   end
 
   def previous
+    previous_branch = nil
+    ordered_branches = Branch.ordered
+    ordered_branches.each_with_index do |branch, i|
+      if branch.version == self.version && i != 0
+        previous_branch = ordered_branches[i-1]
+      end
+    end
+    return previous_branch
   end
 
   def next 
+    next_branch = nil
+    ordered_branches = Branch.ordered
+    ordered_branches.each_with_index do |branch, i|
+      if branch.version == self.version && i < ordered_branches.count - 1
+        next_branch = ordered_branches[i+1]
+      end
+    end
+    return next_branch
+  end
+
+  def new_pages
+    if previous
+      pages.where.not(path: previous.pages.pluck(:path))
+    else
+      pages
+    end
   end
 
   private

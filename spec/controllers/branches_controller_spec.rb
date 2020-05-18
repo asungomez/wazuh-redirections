@@ -208,5 +208,22 @@ RSpec.describe BranchesController, type: :controller do
       end
     end
   end
+
+  describe 'GET #new_pages' do
+    context 'when the branch exists' do
+      it 'returns a success response' do
+        branch = FactoryBot.create(:branch)
+        get :new_pages, params: { id: branch.id }
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when the branch does not exist' do
+      it 'redirects to the branches page' do
+        get :new_pages, params: { id: invalid_id }
+        expect(response).to redirect_to branches_path
+      end
+    end
+  end
   
 end

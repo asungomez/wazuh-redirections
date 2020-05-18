@@ -1,12 +1,14 @@
 %h1.text-center.mb-4 Branches
 
+.text-center.mt-4.mb-4
+  = link_to 'New Branch', new_branch_path, class: 'text-center btn btn-success'
+
 - if @branches.count > 0
   .row
-    .col-12.col-md-4.offset-md-4 
+    .col-12.col-md-6.offset-md-3 
       .list-group
         = render @branches
 - else
   .alert.alert-primary There are no branches yet
 
-.text-center.mt-4
-  = link_to 'New Branch', new_branch_path, class: 'text-center btn btn-success'
+

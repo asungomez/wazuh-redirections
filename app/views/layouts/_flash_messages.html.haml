@@ -1,0 +1,5 @@
+- flash.each do |key, value|
+  %p{class: "alert  alert-dismissible fade show " + flash_class(key), role: "alert"}
+    = value
+    %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+      %span{"aria-hidden" => "true"} &times;

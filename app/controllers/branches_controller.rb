@@ -4,7 +4,7 @@ class BranchesController < ApplicationController
   # GET /branches
   # GET /branches.json
   def index
-    @branches = Branch.all
+    @branches = Branch.order(:version)
   end
 
   # GET /branches/1

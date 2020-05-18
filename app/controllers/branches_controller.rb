@@ -64,7 +64,7 @@ class BranchesController < ApplicationController
   # PUT /branches/1/refresh
   def refresh
     @branch.refresh 
-    redirect_to branch_path(@branch), notice: 'Branch pages succesfully reloaded'
+    redirect_to branch_path(@branch), notice: @branch.pages.count > 0 ? 'Branch pages succesfully reloaded' : 'This branch does not have any documentation pages'
   end
 
   private

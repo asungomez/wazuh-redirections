@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :page do
-    path { "MyString" }
-    branch { nil }
+    path { "/some/path" }
+    branch
   end
 end

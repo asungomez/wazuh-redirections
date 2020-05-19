@@ -9,12 +9,60 @@ RSpec.describe Branch, type: :model do
     it { is_expected.to have_many(:pages) }
   end
 
-  def generate_paths_list(size)
-    paths_list = []
+  def generate_paths(size)
+    paths = []
     size.times do
-      paths_list.push(Faker::File.dir)
+      paths.push(Faker::File.dir)
     end
-    return paths_list
+    return paths
+  end
+
+  describe '.deleted_pages' do
+    before(:each) do
+      FactoryBot.create(:branch, version: '3.7')
+      FactoryBot.create(:branch, version: '3.11')
+      FactoryBot.create(:branch, version: '4.0')
+    end
+
+    it 'returns an empty list for the first branch' do
+      Branch.all.each do |branch|
+        FactoryBot.create_list(:page, 10, branch: branch)
+      end
+      first_branch = Branch.ordered.first 
+      expect(first_branch.deleted_pages).to be_empty
+    end
+
+    it 'returns an empty list when no pages were deleted' do
+      paths = generate_paths(10)
+      first_branch = Branch.ordered.first 
+      second_branch = first_branch.next 
+      paths.each do |path|
+        FactoryBot.create(:page, path: path, branch: first_branch)
+        FactoryBot.create(:page, path: path, branch: second_branch)
+      end
+      expect(second_branch.deleted_pages).to be_empty
+    end
+
+    it 'returns all previous pages if all of them were deleted' do
+      first_branch = Branch.ordered.first 
+      second_branch = first_branch.next
+      FactoryBot.create_list(:page, 10, branch: first_branch)
+      expect(second_branch.deleted_pages.count).to eq(10)
+    end
+
+    it 'returns only the deleted pages if some of them were deleted and some not' do
+      paths = generate_paths(10)
+      first_branch = Branch.ordered.first 
+      second_branch = first_branch.next 
+      paths.each do |path|
+        FactoryBot.create(:page, path: path, branch: first_branch)
+        FactoryBot.create(:page, path: path, branch: second_branch)
+      end
+      generate_paths(5).each do |path|
+        FactoryBot.create(:page, path: path, branch: first_branch)
+      end
+      expect(second_branch.deleted_pages.count).to eq(5)
+    end
   end
   
   describe '.update_pages' do
@@ -23,7 +71,7 @@ RSpec.describe Branch, type: :model do
     end
 
     it 'adds all pages when the branch was empty' do
-      paths = generate_paths_list(10)
+      paths = generate_paths(10)
       @branch.update_pages(paths)
       expect(@branch.pages.count).to eq(10)
     end
@@ -36,15 +84,15 @@ RSpec.describe Branch, type: :model do
 
     it 'deletes the branch pages that are not included in the list' do
       FactoryBot.create_list(:page, 10, branch: @branch)
-      paths_list = @branch.pages.pluck(:path)[0..7]
-      @branch.update_pages(paths_list)
+      paths = @branch.pages.pluck(:path)[0..7]
+      @branch.update_pages(paths)
       expect(@branch.pages.count).to eq(8)
     end
 
     it 'creates the branch pages that are included in the list and do not exist yet' do
       FactoryBot.create_list(:page, 10, branch: @branch)
-      paths_list = @branch.pages.pluck(:path).concat(generate_paths_list(5))
-      @branch.update_pages(paths_list)
+      paths = @branch.pages.pluck(:path).concat(generate_paths(5))
+      @branch.update_pages(paths)
       expect(@branch.pages.count).to eq(15)
     end
   end
@@ -75,7 +123,6 @@ RSpec.describe Branch, type: :model do
       FactoryBot.create(:branch, version: '3.11')
       FactoryBot.create(:branch, version: '4.0')
     end
-
 
     it 'returns nil when called on the first branch' do
       branch = Branch.where(version: '3.7').first

@@ -72,6 +72,10 @@ class BranchesController < ApplicationController
     @pages = @branch.new_pages
   end
 
+  def deleted_pages
+    @pages = @branch.deleted_pages
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_branch

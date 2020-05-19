@@ -1,4 +1,9 @@
-%h1.text-center.mt-4.mb-4 Branch #{@branch.version}
+%h1.text-center.mt-4.mb-4 
+  - if defined?(previous_path) && !previous_path.nil?
+    = link_to '‹', previous_path, class: 'btn btn-success mr-5'
+  Branch #{@branch.version}
+  - if defined?(next_path) && !next_path.nil?
+    = link_to '›', next_path, class: 'btn btn-success ml-5'
 .text-center.mb-3 
   = link_to 'Back to branches list', branches_path
 .text-center.mb-4 
@@ -12,7 +17,7 @@
   %li.nav-item 
     = link_to 'New pages', new_pages_branch_path(@branch), class: "nav-link #{active_class(new_pages_branch_path(@branch))}"
   %li.nav-item
-    = link_to 'Deleted pages', '#', class: "nav-link #{active_class(root_path)}"
+    = link_to 'Deleted pages', deleted_pages_branch_path(@branch), class: "nav-link #{active_class(deleted_pages_branch_path(@branch))}"
   %li.nav-item
     = link_to 'Renamed pages', '#', class: "nav-link #{active_class(root_path)}"
   %li.nav-item

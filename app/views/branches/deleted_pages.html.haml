@@ -1,0 +1,7 @@
+= render 'branch_header', previous_path: @branch.previous ? deleted_pages_branch_path(@branch.previous) : nil, next_path: @branch.next ? deleted_pages_branch_path(@branch.next) : nil
+
+- if @pages.count > 0
+  .list-group.mt-4.mb-4
+    = render partial: 'pages/deleted_page', collection: @pages, as: :page
+- else 
+  .alert.alert-primary.mt-4 This branch does not have any deleted pages from the previous one

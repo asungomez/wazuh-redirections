@@ -6,8 +6,8 @@ class Branch < ApplicationRecord
 
   scope :ordered, -> { Branch.all.to_a.sort_by(&:sorting_value) }
 
-  def refresh
-    paths_list = retrieve_paths_list
+  def update_pages(paths_list)
+    pages.where.not(path: paths_list).destroy_all
     paths_list.each do |path|
       if pages.where(path: path).empty?
         pages.create(path: path)
@@ -51,23 +51,4 @@ class Branch < ApplicationRecord
       pages
     end
   end
-
-  private
-
-    def doclist_url
-      "https://documentation-dev.wazuh.com/#{version}/.doclist"
-    end
-
-    def retrieve_paths_list
-      paths_list = []
-      doclist_file = Down.download(doclist_url)
-      doclist_file.each_line do |line|
-        line.chomp!
-        paths_list = paths_list.push(line)
-      end
-      doclist_file.unlink
-      return paths_list
-    rescue Down::NotFound
-      return []
-    end
 end

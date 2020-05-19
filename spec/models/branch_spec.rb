@@ -8,22 +8,44 @@ RSpec.describe Branch, type: :model do
     it { is_expected.to validate_uniqueness_of(:version) }
     it { is_expected.to have_many(:pages) }
   end
+
+  def generate_paths_list(size)
+    paths_list = []
+    size.times do
+      paths_list.push(Faker::File.dir)
+    end
+    return paths_list
+  end
   
-  describe '.refresh' do
-    it 'loads a page list when the version number exists' do
-      branch = FactoryBot.create(:branch, version: '3.12')
-      branch.refresh 
-      # This is the number of pages the 3.12 branch currently has. This test will break if this page number changes, 
-      # so when it fails, it needs to be revisited to assert if the failure is caused by the code or by a structure 
-      # change in the remote documentation
-      pages_in_branch = 513
-      expect(branch.pages.count).to eq(pages_in_branch) 
+  describe '.update_pages' do
+    before(:each) do
+      @branch = FactoryBot.create(:branch)
     end
 
-    it 'creates an empty page list when the version number does not exist' do
-      branch = FactoryBot.create(:branch, version: '1.2')
-      branch.refresh 
-      expect(branch.pages.count).to eq(0)
+    it 'adds all pages when the branch was empty' do
+      paths = generate_paths_list(10)
+      @branch.update_pages(paths)
+      expect(@branch.pages.count).to eq(10)
+    end
+
+    it 'deletes all branch pages when the received list is empty' do
+      FactoryBot.create_list(:page, 10, branch: @branch)
+      @branch.update_pages([])
+      expect(@branch.pages.count).to eq(0)
+    end
+
+    it 'deletes the branch pages that are not included in the list' do
+      FactoryBot.create_list(:page, 10, branch: @branch)
+      paths_list = @branch.pages.pluck(:path)[0..7]
+      @branch.update_pages(paths_list)
+      expect(@branch.pages.count).to eq(8)
+    end
+
+    it 'creates the branch pages that are included in the list and do not exist yet' do
+      FactoryBot.create_list(:page, 10, branch: @branch)
+      paths_list = @branch.pages.pluck(:path).concat(generate_paths_list(5))
+      @branch.update_pages(paths_list)
+      expect(@branch.pages.count).to eq(15)
     end
   end
 

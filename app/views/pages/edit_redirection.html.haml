@@ -14,5 +14,7 @@
           Deleted page form 
         #renamed_page_form.hidden 
           = render 'rename_form', rename_form_params(@branch, @page)
+      .card-footer 
+        = link_to 'Cancel', branch_path(@branch), class: 'btn btn-danger'
 
 = javascript_pack_tag 'redirection_type_selector'

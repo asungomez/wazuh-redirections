@@ -33,6 +33,7 @@ Scenario: Listing branch renamed pages
   When  I list the branch's renamed pages 
   Then  I should see all of the branch's renamed pages
 
+@javascript
 Scenario: Marking a page as renamed
   Given The branch has a new page 
   And   The branch has a deleted page 

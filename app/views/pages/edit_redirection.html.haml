@@ -1,0 +1,18 @@
+
+.row 
+  .col-12.col-md-6.offset-md-3 
+    .card 
+      .card-header 
+        %h3 Redirection for #{@page.path}
+      .card-body 
+        = label_tag 'redirection_type', 'Redirection type'
+        = select_tag 'redirection_type', options_for_select(redirection_types), class: 'form-control', id: 'redirection-selector'
+        %hr 
+        #new_page_form.hidden
+          New page form 
+        #deleted_page_form.hidden 
+          Deleted page form 
+        #renamed_page_form.hidden 
+          = render 'rename_form', rename_form_params(@branch, @page)
+
+= javascript_pack_tag 'redirection_type_selector'

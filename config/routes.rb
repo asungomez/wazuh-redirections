@@ -6,6 +6,9 @@ Rails.application.routes.draw do
     get 'pages/deleted', to: 'branches#deleted_pages', on: :member, as: :deleted_pages
     get 'pages/renamed', to: 'branches#renamed_pages', on: :member, as: :renamed_pages
   end
+
+  get 'branches/:branch_id/pages/:page_id/redirection', to: 'pages#edit_redirection', as: :edit_redirection
+  post 'rename-page', to: 'pages#rename_page', as: :rename_page
   
   root 'branches#index'
 end

@@ -7,16 +7,20 @@ class Branch < ApplicationRecord
   scope :ordered, -> { Branch.all.to_a.sort_by(&:sorting_value) }
 
   def deleted_pages
+    deleted = []
     if previous
-      previous.pages.where.not(path: pages.pluck(:path))
-    else
-      []
+      Page.removed(previous, self).each do |page|
+        unless page.destination_in(self)
+          deleted.push(page)
+        end
+      end
     end
+    return deleted
   end
 
   def new_pages
     if previous
-      pages.where.not(path: previous.pages.pluck(:path))
+      Page.added(previous, self).where.not(id: renamed_pages.pluck(:id))
     else
       pages
     end
@@ -42,6 +46,19 @@ class Branch < ApplicationRecord
       end
     end
     return previous_branch
+  end
+
+  def renamed_pages
+    renamed = []
+    if previous
+      Page.added(previous, self).each do |page|
+        origins_from_previous_branch = page.origins.where(branch: previous)
+        if origins_from_previous_branch.count == 1
+          renamed.push(origins_from_previous_branch.first.destination_in(self))
+        end
+      end
+    end
+    return renamed
   end
 
   def sorting_value

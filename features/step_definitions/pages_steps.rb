@@ -10,6 +10,17 @@ Given("A branch has some new pages") do
   @new_pages = FactoryBot.create_list(:page, 5, branch: @branch)
 end
 
+Given("A branch has some renamed pages") do
+  @previous_branch = FactoryBot.create(:branch, version: '2.1')
+  @branch = FactoryBot.create(:branch, version: '2.2')
+  @renamed_previous = FactoryBot.create_list(:page, 5, branch: @previous_branch)
+  @renamed_current = FactoryBot.create_list(:page, 5, branch: @branch)
+
+  5.times do |i|
+    Redirection.create(from: @renamed_previous[i].id, to: @renamed_current[i].id)
+  end
+end
+
 
 When("I refresh a branch") do
   visit branch_path(@branch)
@@ -24,9 +35,15 @@ When("I list the branch's new pages") do
   visit new_pages_branch_path(@branch)
 end
 
+When("I list the branch's renamed pages") do
+  visit renamed_pages_branch_path(@branch)
+end
+
 
 Then("I should see all of the branch's deleted pages") do
-  pending # Write code here that turns the phrase above into concrete actions
+  @new_pages.each do |new_page|
+    expect(page).to have_content(new_page.path)
+  end
 end
 
 Then("I should see all of the branch's new pages") do
@@ -35,12 +52,12 @@ Then("I should see all of the branch's new pages") do
   end
 end
 
+Then("I should see all of the branch's renamed pages") do
+  @renamed_current.each do |new_page|
+    expect(page).to have_content(new_page.path)
+  end
+end
+
 Then("I should see an updated list of its pages") do
   expect(@branch.pages.count).to be > 0
 end
-
-
-
-
-
-

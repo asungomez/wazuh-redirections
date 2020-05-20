@@ -1,0 +1,13 @@
+= render 'branch_header', previous_path: @branch.previous ? renamed_pages_branch_path(@branch.previous) : nil, next_path: @branch.next ? renamed_pages_branch_path(@branch.next) : nil
+
+
+- if @pages.count > 0
+  %table.table.mt-5.mb-4
+    %thead
+      %tr
+        %th{scope: 'col'} From (branch #{@branch.previous.version})
+        %th{scope: 'col'} To (branch #{@branch.version})
+    %tbody
+      = render partial: 'pages/renamed_page', collection: @pages, as: :page
+- else 
+  .alert.alert-primary.mt-4 This branch does not have any renamed pages

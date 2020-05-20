@@ -9,6 +9,11 @@ RSpec.describe Branch, type: :model do
     it { is_expected.to have_many(:pages) }
   end
 
+  describe 'Scopes' do
+    describe '.ordered' do
+    end
+  end
+
   def generate_paths(size)
     paths = []
     size.times do
@@ -62,6 +67,90 @@ RSpec.describe Branch, type: :model do
         FactoryBot.create(:page, path: path, branch: first_branch)
       end
       expect(second_branch.deleted_pages.count).to eq(5)
+    end
+
+    it 'does not return renamed pages' do
+      paths = generate_paths(10)
+      first_branch = Branch.ordered.first 
+      second_branch = first_branch.next 
+
+      # Common paths
+      paths.each do |path|
+        FactoryBot.create(:page, path: path, branch: first_branch)
+        FactoryBot.create(:page, path: path, branch: second_branch)
+      end
+
+      # Deleted paths
+      generate_paths(5).each do |path|
+        FactoryBot.create(:page, path: path, branch: first_branch)
+      end
+
+      # Renamed paths
+      previous_pages = FactoryBot.create_list(:page, 5, branch: first_branch)
+      current_pages = FactoryBot.create_list(:page, 5, branch: second_branch)
+      5.times do |i|
+        previous_pages[i].redirect_to(current_pages[i])
+      end
+
+      expect(second_branch.deleted_pages.count).to eq(5)
+    end
+  end
+
+  describe '.renamed_pages' do
+    before(:each) do
+      FactoryBot.create(:branch, version: '3.7')
+      FactoryBot.create(:branch, version: '3.11')
+      FactoryBot.create(:branch, version: '4.0')
+    end
+
+    it 'returns an empty list for the first branch' do
+      Branch.all.each do |branch|
+        FactoryBot.create_list(:page, 10, branch: branch)
+      end
+      first_branch = Branch.ordered.first 
+      expect(first_branch.renamed_pages).to be_empty
+    end
+
+    it 'returns an empty list when no pages were renamed' do
+      Branch.all.each do |branch|
+        FactoryBot.create_list(:page, 10, branch: branch)
+      end
+      last_branch = Branch.ordered.last 
+      expect(last_branch.renamed_pages).to be_empty
+    end
+
+    it 'returns a list with the renamed pages when some of them were renamed' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages = FactoryBot.create_list(:page, 10, branch: previous_branch)
+      current_pages = FactoryBot.create_list(:page, 10, branch: current_branch)
+
+      5.times do |i|
+        previous_pages[i].redirect_to(current_pages[i])
+      end
+
+      expect(current_branch.renamed_pages.count).to eq(5)
+    end
+
+    it 'returns the renamed version of the current branch, not the previous' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages = FactoryBot.create_list(:page, 5, branch: previous_branch)
+      current_pages = FactoryBot.create_list(:page, 5, branch: current_branch)
+
+      5.times do |i|
+        previous_pages[i].redirect_to(current_pages[i])
+      end
+
+      renamed_pages = current_branch.renamed_pages
+
+      current_pages.each do |page|
+        expect(renamed_pages).to include(page)
+      end
+
+      previous_pages.each do |page|
+        expect(renamed_pages).not_to include(page)
+      end
     end
   end
   
@@ -202,6 +291,29 @@ RSpec.describe Branch, type: :model do
         previous_branch.pages.create(path: page.path)
       end
       FactoryBot.create_list(:page, 5, branch: branch)
+      expect(branch.new_pages.count).to eq(5)
+    end
+
+    it 'does not return renamed pages' do 
+      previous_branch = Branch.find_by(version: '3.7')
+      branch = Branch.find_by(version: '3.11')
+
+      # Repeated pages
+      FactoryBot.create_list(:page, 10, branch: branch)
+      branch.pages.each do |page|
+        previous_branch.pages.create(path: page.path)
+      end
+
+      # New pages
+      FactoryBot.create_list(:page, 5, branch: branch)
+
+      # Renamed pages
+      previous_pages = FactoryBot.create_list(:page, 5, branch: previous_branch)
+      current_pages = FactoryBot.create_list(:page, 5, branch: branch)
+      5.times do |i|
+        previous_pages[i].redirect_to(current_pages[i])
+      end
+
       expect(branch.new_pages.count).to eq(5)
     end
   end

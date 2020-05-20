@@ -1,5 +1,9 @@
 = render 'branch_header', previous_path: @branch.previous ? deleted_pages_branch_path(@branch.previous) : nil, next_path: @branch.next ? deleted_pages_branch_path(@branch.next) : nil
 
+.card.mt-4.bg-light
+  .card-body
+    Deleted pages are documentation pages that existed until the previous version, but in this version don't exist anymore and don't have any similar page to redirect.
+
 - if @pages.count > 0
   .list-group.mt-4.mb-4
     = render partial: 'pages/deleted_page', collection: @pages, as: :page

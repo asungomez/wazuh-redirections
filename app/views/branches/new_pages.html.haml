@@ -1,5 +1,8 @@
 = render 'branch_header', previous_path: @branch.previous ? new_pages_branch_path(@branch.previous) : nil, next_path: @branch.next ? new_pages_branch_path(@branch.next) : nil
 
+.card.mt-4.bg-light
+  .card-body
+    New pages are documentation pages that are completely new for this branch, and don't have a correspondence with any other page from previous branches.
 
 - if @pages.count > 0
   .list-group.mt-4.mb-4

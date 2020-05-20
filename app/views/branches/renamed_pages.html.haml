@@ -1,5 +1,8 @@
 = render 'branch_header', previous_path: @branch.previous ? renamed_pages_branch_path(@branch.previous) : nil, next_path: @branch.next ? renamed_pages_branch_path(@branch.next) : nil
 
+.card.mt-4.bg-light
+  .card-body
+    Renamed pages are documentation pages that changed their URL from the previous version to this one. They have a one-to-one correspondence with their new URL.
 
 - if @pages.count > 0
   %table.table.mt-5.mb-4

@@ -1,7 +1,7 @@
 module PagesHelper
   def redirection_types(options = { deleted_page: false })
     [ 
-      options[:deleted_page] ? ['New page', 'new_page_form'] : ['Deleted page', 'deleted_page_form'], 
+      options[:deleted_page] ? ['Deleted page', 'deleted_page_form'] : ['New page', 'new_page_form'], 
       ['Renamed page', 'renamed_page_form']
     ]
   end

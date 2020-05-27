@@ -4,7 +4,7 @@ class Branch < ApplicationRecord
   validates :version, presence: true, uniqueness: true
   has_many :pages
 
-  scope :ordered, -> { Branch.all.to_a.sort_by(&:sorting_value) }
+  scope :ordered, -> { self.all.to_a.sort_by(&:sorting_value) }
 
   def deleted_pages
     deleted = []

@@ -6,6 +6,10 @@
 
 require 'cucumber/rails'
 
+Rails.application.configure do
+  config.cache_classes = true
+end
+
 # frozen_string_literal: true
 
 # Capybara defaults to CSS3 selectors rather than XPath.
@@ -34,6 +38,10 @@ ActionController::Base.allow_rescue = false
 # For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
 begin
   DatabaseCleaner.strategy = :transaction
+  DatabaseCleaner.clean_with(
+    :truncation,
+    except: %w(ar_internal_metadata)
+  )
 rescue NameError
   raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
 end

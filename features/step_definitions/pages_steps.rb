@@ -36,7 +36,8 @@ When("I mark the new page as renamed") do
   visit deleted_pages_branch_path(@branch)
   page.find('.list-group-item', text: @deleted_page.path).click_on 'Edit'
   select 'Renamed page', from: 'redirection_type'
-  fill_in 'destination_page', with: @new_page.path 
+  fill_in 'destination_page', with: @new_page.path
+  page.find('.autocomplete .selected').click
   click_on 'Save'
 end
 

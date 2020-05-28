@@ -1,3 +1,5 @@
 %tr 
   %td=page.origins.where(branch: @branch.previous).first.path
   %td=page.path
+  %td 
+    = link_to 'Edit', edit_redirection_path(@branch,page), class: 'btn btn-primary'

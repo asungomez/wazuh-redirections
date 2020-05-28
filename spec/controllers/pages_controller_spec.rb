@@ -10,7 +10,7 @@ RSpec.describe PagesController, type: :controller do
   end
 
   describe 'GET #edit_redirection' do
-    context 'when its a new page' do
+    context 'when it is a new page' do
       it 'returns a success response' do
         FactoryBot.create_list(:branch, 2)
         branch = Branch.ordered.last
@@ -20,12 +20,25 @@ RSpec.describe PagesController, type: :controller do
       end
     end
 
-    context 'when its a deleted page' do
+    context 'when it is a deleted page' do
       it 'returns a success response' do
         FactoryBot.create_list(:branch, 2)
         branch = Branch.ordered.last
         page = FactoryBot.create(:page, branch: Branch.ordered.first)
         get :edit_redirection, params: {branch_id: branch.id, page_id: page.id}
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when it is a renamed page' do
+      it 'returns a success response' do
+        FactoryBot.create_list(:branch, 2)
+        branch = Branch.ordered.last
+        previous_branch = Branch.ordered.first
+        deleted_page = FactoryBot.create(:page, branch: previous_branch)
+        new_page = FactoryBot.create(:page, branch: branch)
+        deleted_page.redirect_to(new_page)
+        get :edit_redirection, params: {branch_id: branch.id, page_id: new_page.id}
         expect(response).to be_successful
       end
     end
@@ -161,6 +174,61 @@ RSpec.describe PagesController, type: :controller do
           expect {
             post :rename_page, params: {origin_id: @origin.id, destination_id: invalid_page_id }
           }.not_to change{@origin.destination_redirections}
+        end
+      end
+    end
+  end
+
+  describe 'POST #mark_as_new' do
+    context 'when parameters are correct' do
+      context 'and the page is already new' do
+        before(:each) do
+          @page = FactoryBot.create(:page)
+        end
+
+        it 'redirects to the branch new pages' do
+          post :mark_as_new, params: {page_id: @page.id}
+          expect(response).to redirect_to new_pages_branch_path(@page.branch)
+        end
+
+        it 'does not change the redirections' do
+          expect{
+            post :mark_as_new, params: {page_id: @page.id}
+          }.not_to change(Redirection, :count)
+        end
+      end
+
+      context 'and the page is renamed' do
+        before(:each) do
+          previous_page = FactoryBot.create(:page, version: '1.0')
+          @page = FactoryBot.create(:page, version: '1.1')
+          previous_page.redirect_to(@page)
+        end
+
+        it 'redirects to the branch new pages' do
+          post :mark_as_new, params: {page_id: @page.id}
+          expect(response).to redirect_to new_pages_branch_path(@page.branch)
+        end
+
+        it 'deletes the renaming redirection' do
+          expect{
+            post :mark_as_new, params: {page_id: @page.id}
+          }.to change(Redirection, :count).by(-1)
+        end
+      end
+    end
+
+    context 'when parameters are invalid' do
+      context 'because the page does not exist' do
+        it 'redirects to the branches page' do
+          post :mark_as_new, params: {page_id: invalid_page_id}
+          expect(response).to redirect_to branches_path
+        end
+
+        it 'does not change the redirections' do
+          expect{
+            post :mark_as_new, params: {page_id: invalid_page_id}
+          }.not_to change(Redirection, :count)
         end
       end
     end

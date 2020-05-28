@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   get 'branches/:branch_id/pages/:page_id/redirection', to: 'pages#edit_redirection', as: :edit_redirection
   post 'rename-page', to: 'pages#rename_page', as: :rename_page
+  post 'new-page/:page_id', to: 'pages#mark_as_new', as: :new_page
   
   root 'branches#index'
 end

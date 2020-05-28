@@ -10,6 +10,7 @@
       %tr
         %th{scope: 'col'} From (branch #{@branch.previous.version})
         %th{scope: 'col'} To (branch #{@branch.version})
+        %th{scope: 'col'} Actions
     %tbody
       = render partial: 'pages/renamed_page', collection: @pages, as: :page
 - else 

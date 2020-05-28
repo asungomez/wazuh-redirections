@@ -66,4 +66,3 @@ Scenario: Marking a page as new
   And   I should not see the new page in the renamed pages list 
   And   I should see the old page in the deleted pages list 
   And   I should not see the old page in the renamed pages list
-

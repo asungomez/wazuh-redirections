@@ -40,9 +40,28 @@ RSpec.describe PagesHelper, type: :helper do
       expect(helper.rename_form_params(page.branch, page)[:destination]).to eq(page)
     end
 
+    it 'sets the destination disabled when the page belongs to the branch' do
+      page = FactoryBot.create(:page)
+      expect(helper.rename_form_params(page.branch, page)[:disabled]).to eq('destination')
+    end
+
     it 'sets the page as origin when it does not belong to the branch' do
       page = FactoryBot.create(:page)
       expect(helper.rename_form_params(FactoryBot.create(:branch), page)[:origin]).to eq(page)
+    end
+
+    it 'sets the origin disabled when the page does not belong to the branch' do
+      page = FactoryBot.create(:page)
+      expect(helper.rename_form_params(FactoryBot.create(:branch), page)[:disabled]).to eq('origin')
+    end
+
+    it 'sets both origin and destination when the page is renamed' do
+      page = FactoryBot.create(:page, version: '1.1')
+      previous_page = FactoryBot.create(:page, version: '1.0')
+      page.make_renamed(previous_page)
+      form_params = helper.rename_form_params(page.branch, page)
+      expect(form_params[:origin]).to eq(previous_page)
+      expect(form_params[:destination]).to eq(page)
     end
   end
 

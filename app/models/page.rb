@@ -52,4 +52,16 @@ class Page < ApplicationRecord
     end
     Redirection.create(from: id, to: destination.id)
   end
+
+  def type(branch)
+    if self.branch == branch
+      if is_new?
+        'new'
+      elsif is_renamed?
+        'renamed'
+      end
+    elsif is_deleted?
+      'deleted'
+    end
+  end
 end

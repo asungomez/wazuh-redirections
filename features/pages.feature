@@ -59,6 +59,7 @@ Scenario: Marking some pages as split
   And   I should not see the new pages in the new pages list 
   And   I should not see the older page in the deleted pages list 
 
+@javascript
 Scenario: Marking a page as new
   Given The branch has a renamed page 
   When  I mark the renamed page as new 

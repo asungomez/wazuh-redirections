@@ -7,10 +7,10 @@
     .form-group#origins-section{'data-origins': origins_for_autocomplete(branch).to_json}
       = label_tag 'origin_page', 'From'
       = hidden_field_tag 'origin_id', origin.try(:id)
-      = text_field_tag 'origin_page', origin.try(:path), class: 'form-control', disabled: !origin.nil?, autocomplete: :off
+      = text_field_tag 'origin_page', origin.try(:path), class: 'form-control', disabled: disabled == 'origin', autocomplete: :off
     .form-group#destinations-section{'data-destinations': destinations_for_autocomplete(branch).to_json}
       = label_tag 'destination_page', 'To'
       = hidden_field_tag 'destination_id', destination.try(:id)
-      = text_field_tag 'destination_page', destination.try(:path), class: 'form-control', disabled: !destination.nil?, autocomplete: :off
+      = text_field_tag 'destination_page', destination.try(:path), class: 'form-control', disabled: disabled == 'destination', autocomplete: :off
     = submit_tag 'Save', class: 'btn btn-primary'
     = javascript_pack_tag 'rename_form'

@@ -6,12 +6,12 @@
         %h3 Redirection for #{@page.path}
       .card-body 
         = label_tag 'redirection_type', 'Redirection type'
-        = select_tag 'redirection_type', options_for_select(redirection_options_for_select(@page, @branch)), class: 'form-control', id: 'redirection-selector'
+        = select_tag 'redirection_type', options_for_select(redirection_options_for_select(@page, @branch), default_redirection_option_for_select(@page, @branch)), class: 'form-control', id: 'redirection-selector'
         %hr 
         #new_page_form.hidden
           = render 'new_form', page: @page
         #deleted_page_form.hidden 
-          Deleted page form 
+          = render 'deleted_form', branch: @branch
         #renamed_page_form.hidden 
           = render 'rename_form', rename_form_params(@branch, @page)
       .card-footer 

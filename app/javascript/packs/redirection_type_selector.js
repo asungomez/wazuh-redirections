@@ -10,9 +10,13 @@ function hideForm(id) {
   document.getElementById(id).classList.add('hidden');
 }
 
-formSelector.addEventListener('change', function(event) {
+function switchToForm(form) {
   const previousForm = currentForm;
-  currentForm = formSelector.value;
+  currentForm = form;
   displayForm(currentForm);
   hideForm(previousForm);
+}
+
+formSelector.addEventListener('change', function(event) {
+  switchToForm(formSelector.value);
 });

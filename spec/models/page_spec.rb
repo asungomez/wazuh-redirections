@@ -197,5 +197,31 @@ RSpec.describe Page, type: :model do
         expect(origin.destinations).not_to include(old_destination)
       end
     end
+
+    describe '.type' do
+      it 'returns deleted when it is a deleted page in that branch' do
+        page = FactoryBot.create(:page)
+        branch = FactoryBot.create(:branch)
+        expect(page.type(branch)).to eq('deleted')
+      end
+
+      it 'returns new when it is a new page in that branch' do
+        page = FactoryBot.create(:page)
+        expect(page.type(page.branch)).to eq('new')
+      end
+
+      it 'returns renamed when it is a renamed page in that branch' do
+        page = FactoryBot.create(:page, version: '1.1')
+        page.make_renamed(FactoryBot.create(:page, version: '1.0'))
+        expect(page.type(page.branch)).to eq('renamed')
+      end
+
+      it 'returns nil when none of the page types apply' do
+        page = FactoryBot.create(:page, version: '1.1')
+        previous_page = FactoryBot.create(:page, version: '1.0')
+        page.make_renamed(previous_page)
+        expect(previous_page.type(page.branch)).to be_nil
+      end
+    end
   end
 end

@@ -17,7 +17,7 @@ Given("A branch has some renamed pages") do
   @renamed_current = FactoryBot.create_list(:page, 5, branch: @branch)
 
   5.times do |i|
-    Redirection.create(from: @renamed_previous[i].id, to: @renamed_current[i].id)
+    @renamed_current[i].make_renamed(@renamed_previous[i])
   end
 end
 
@@ -36,7 +36,7 @@ Given("The branch has a renamed page") do
   @branch = FactoryBot.create(:branch, version: '2.2')
   @renamed_page_new = FactoryBot.create(:page, branch: @branch)
   @renamed_page_deleted = FactoryBot.create(:page, branch: @previous_branch)
-  @renamed_page_deleted.redirect_to(@renamed_page_new)
+  @renamed_page_new.make_renamed(@renamed_page_deleted)
 end
 
 

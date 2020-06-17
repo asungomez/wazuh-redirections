@@ -35,8 +35,10 @@ class Page < ApplicationRecord
   end
 
   def make_new
-    Redirection.destroy_by(from: origins_from(branch.previous).pluck(:id), to: id)
-    Redirection.destroy_by(to: origins_from(branch.previous).pluck(:id), from: id)
+    if branch.previous
+      Redirection.destroy_by(from: origins_from(branch.previous).pluck(:id), to: id)
+      Redirection.destroy_by(to: origins_from(branch.previous).pluck(:id), from: id)
+    end
   end
 
   def make_renamed(page, options = {previous_anchor: nil, current_anchor: nil})

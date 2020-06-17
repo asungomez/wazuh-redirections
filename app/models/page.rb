@@ -12,6 +12,7 @@ class Page < ApplicationRecord
   scope :added, ->  (branch_from, branch_to) { branch_to.pages.where.not(path: branch_from.pages.pluck(:path)) }
   scope :removed, ->  (branch_from, branch_to) { branch_from.pages.where.not(path: branch_to.pages.pluck(:path)) }
 
+  # TODO Consider origin anchor
   def destination_in(branch)
     destinations.find_by(branch: branch)
   end
@@ -33,6 +34,7 @@ class Page < ApplicationRecord
     Redirection.destroy_by(to: origins_from(branch.previous).pluck(:id), from: id)
   end
 
+  # TODO consider anchors
   def make_renamed(page)
     if page 
       make_new
@@ -41,10 +43,12 @@ class Page < ApplicationRecord
     end
   end
 
+  # TODO Consider anchors
   def origins_from(branch)
     origins.where(branch: branch)
   end
 
+  # TODO Consider origin and destination anchors
   def redirect_to(destination)
     current_destination = destination_in(destination.branch)
     if current_destination

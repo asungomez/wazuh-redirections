@@ -48,6 +48,7 @@ class Branch < ApplicationRecord
     return previous_branch
   end
 
+  # TODO Consider anchors
   def renamed_pages
     renamed = []
     if previous

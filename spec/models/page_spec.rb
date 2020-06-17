@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Page, type: :model do
 
-
   describe 'Scopes' do
     describe '.added' do
       it 'returns an empty list when no pages were added' do

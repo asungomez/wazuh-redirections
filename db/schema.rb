@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_19_121730) do
+ActiveRecord::Schema.define(version: 2020_05_29_141237) do
 
   create_table "branches", force: :cascade do |t|
     t.string "version"
@@ -31,6 +31,8 @@ ActiveRecord::Schema.define(version: 2020_05_19_121730) do
     t.integer "to"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "origin_anchor"
+    t.string "destination_anchor"
   end
 
   add_foreign_key "pages", "branches"

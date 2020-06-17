@@ -3,14 +3,18 @@ class Redirection < ApplicationRecord
   belongs_to :destination, class_name: 'Page', foreign_key: 'to', inverse_of: :destination_redirections
 
   validates :from, presence: true
-  validates :to, presence: true, uniqueness: {scope: :from}
+  validates :to, presence: true
   validate :destinations_must_be_from_different_branches
 
   def destinations_must_be_from_different_branches
-    origin = Page.find(from)
-    destination = Page.find(to)
-    if origin.destinations.pluck(:branch_id).include?(destination.branch_id)
-      errors.add(:to, "A page can only have one redirection destination per branch")
+    destination_branch = Page.find(to).branch 
+    previous_redirections = Redirection.where(
+      from: from, 
+      to: destination_branch.pages.pluck(:id), 
+      origin_anchor: origin_anchor
+    )
+    unless previous_redirections.empty?
+      errors.add(:to, "An origin URL can only have one redirection destination per branch")
     end
   end
 end

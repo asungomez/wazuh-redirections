@@ -126,7 +126,7 @@ RSpec.describe Branch, type: :model do
       current_pages = FactoryBot.create_list(:page, 10, branch: current_branch)
 
       5.times do |i|
-        previous_pages[i].redirect_to(current_pages[i])
+        current_pages[i].make_renamed(previous_pages[i])
       end
 
       expect(current_branch.renamed_pages.count).to eq(5)
@@ -139,7 +139,7 @@ RSpec.describe Branch, type: :model do
       current_pages = FactoryBot.create_list(:page, 5, branch: current_branch)
 
       5.times do |i|
-        previous_pages[i].redirect_to(current_pages[i])
+        current_pages[i].make_renamed(previous_pages[i])
       end
 
       renamed_pages = current_branch.renamed_pages
@@ -151,6 +151,61 @@ RSpec.describe Branch, type: :model do
       previous_pages.each do |page|
         expect(renamed_pages).not_to include(page)
       end
+    end
+
+    it 'includes in the collection pages with more than 1 renaming' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages = FactoryBot.create_list(:page, 2, branch: previous_branch)
+      current_page = FactoryBot.create(:page, branch: current_branch)
+      current_page.make_renamed(previous_pages.first)
+      current_page.make_renamed(previous_pages.last, current_anchor: 'something')
+      expect(current_branch.renamed_pages).to include(current_page)
+    end
+
+    it 'does not return pages with non-bidirectional redirections' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages_not_renamed = FactoryBot.create_list(:page, 5, branch: previous_branch)
+      previous_pages_renamed = FactoryBot.create_list(:page, 5, branch: previous_branch)
+      current_pages_not_renamed = FactoryBot.create_list(:page, 5, branch: current_branch)
+      current_pages_renamed = FactoryBot.create_list(:page, 5, branch: current_branch)
+
+      5.times do |i|
+        previous_pages_not_renamed[i].redirect_to(current_pages_not_renamed[i])
+      end
+
+      5.times do |i|
+        current_pages_renamed[i].make_renamed(previous_pages_renamed[i])
+      end
+
+      expect(current_branch.renamed_pages.count).to eq(5)
+    end
+    
+    it 'only includes pages with exactly one redirection origin per destination anchor' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages = FactoryBot.create_list(:page, 3, branch: previous_branch)
+
+      renamed_page = FactoryBot.create(:page, branch: current_branch)
+      renamed_page.make_renamed(previous_pages[0])
+
+      not_renamed_page = FactoryBot.create(:page, branch: current_branch)
+      not_renamed_page.make_renamed(previous_pages[1], current_anchor: 'something')
+      previous_pages[2].redirect_to(not_renamed_page, destination_anchor: 'something')
+      expect(current_branch.renamed_pages).not_to include(not_renamed_page)
+    end
+
+    it 'does not duplicate pages' do
+      previous_branch = Branch.ordered.first 
+      current_branch = previous_branch.next 
+      previous_pages = FactoryBot.create_list(:page, 2, branch: previous_branch)
+      current_page = FactoryBot.create(:page, branch: current_branch)
+
+      current_page.make_renamed(previous_pages.first, current_anchor: 'something')
+      current_page.make_renamed(previous_pages.last, current_anchor: 'something-else')
+
+      expect(current_branch.renamed_pages.count).to eq(1)
     end
   end
   
@@ -311,7 +366,7 @@ RSpec.describe Branch, type: :model do
       previous_pages = FactoryBot.create_list(:page, 5, branch: previous_branch)
       current_pages = FactoryBot.create_list(:page, 5, branch: branch)
       5.times do |i|
-        previous_pages[i].redirect_to(current_pages[i])
+        current_pages[i].make_renamed(previous_pages[i])
       end
 
       expect(branch.new_pages.count).to eq(5)

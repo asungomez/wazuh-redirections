@@ -51,10 +51,15 @@ class Branch < ApplicationRecord
   def renamed_pages
     renamed = []
     if previous
-      Page.added(previous, self).each do |page|
-        origins_from_previous_branch = page.origins.where(branch: previous)
-        if origins_from_previous_branch.count == 1
-          renamed.push(origins_from_previous_branch.first.destination_in(self))
+      pages.limit(-1).each do |page|
+        page.redirections_to(previous).each do |redirection|
+          bidirectional = Redirection.where(to: redirection.from, from: redirection.to, destination_anchor: redirection.origin_anchor, origin_anchor: redirection.destination_anchor).count > 0
+
+          unique = Redirection.where(from: previous.pages.pluck(:id), to: page.id, destination_anchor: redirection.origin_anchor).count == 1
+
+          if bidirectional && unique && !renamed.include?(page)
+            renamed.push(page)
+          end
         end
       end
     end
